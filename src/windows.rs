@@ -1,12 +1,15 @@
 use pki_types::CertificateDer;
 use schannel::cert_context::ValidUses;
-use schannel::cert_store::CertStore;
+use schannel::cert_store::CertStoreBuilder;
 
 use super::CertificateResult;
 
 pub fn load_native_certs() -> CertificateResult {
     let mut result = CertificateResult::default();
-    let current_user_store = match CertStore::open_current_user("ROOT") {
+    let current_user_store = match CertStoreBuilder::new()
+        .read_only()
+        .open_current_user("ROOT")
+    {
         Ok(store) => store,
         Err(err) => {
             result.os_error(err.into(), "failed to open current user certificate store");
